@@ -73,18 +73,6 @@ cmd:
 
   |  KW_PRINT expr   { $$ = make_cmd_print($2); }
 
-
-
-
-
-
-
-
-
-
-
-
-
 ;
 
 expr:

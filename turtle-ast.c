@@ -52,6 +52,15 @@ struct ast_node *make_cmd_colorRGB(struct ast_node *R,struct ast_node *G, struct
   return NULL;
 }
 
+struct ast_node *make_cmd_forward(struct ast_node *expr) {
+  struct ast_node *node = calloc(1, sizeof(struct ast_node));
+  node->kind = KIND_CMD_SIMPLE;
+  node->u.cmd = CMD_FORWARD;
+  node->children_count = 1;
+  node->children[0] = expr;
+  return node;
+}
+
 
 void ast_destroy(struct ast *self) {
 
@@ -70,7 +79,7 @@ void context_create(struct context *self) {
  */
 
 void ast_eval(const struct ast *self, struct context *ctx) {
-
+  
 }
 
 /*

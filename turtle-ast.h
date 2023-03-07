@@ -101,6 +101,9 @@ struct ast_node *make_cmd_colorRGB(struct ast_node *R,struct ast_node *G, struct
 
 
 
+struct ast_node *make_cmd_forward(struct ast_node *expr);
+
+
 // root of the abstract syntax tree
 struct ast {
   struct ast_node *unit;
