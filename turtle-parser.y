@@ -19,6 +19,7 @@ void yyerror(struct ast *ret, const char *);
   double value;
   char *name;
   struct ast_node *node;
+
 }
 
 %token <value>    VALUE       "value"
@@ -35,6 +36,8 @@ void yyerror(struct ast *ret, const char *);
 %token            KW_HOME         "home"
 %token            KW_COLOR        "color"
 %token            KW_PRINT        "print"
+
+
 
 
 
@@ -69,15 +72,17 @@ cmd:
   |  KW_HOME                { $$ = make_cmd_home(); }
   |  KW_COLOR expr          { $$ = make_cmd_color($2); }
   |  KW_COLOR expr expr expr{ $$ = make_cmd_colorRGB($2,$3,$4); }
-
   |  KW_PRINT expr          { $$ = make_cmd_print($2); }
 
 ;
 
 expr:
     VALUE             { $$ = make_expr_value($1); }
+  | NAME              { $$ = make_expr_name($1);}
     /* TODO: add identifier */
 ;
+
+
 
 %%
 

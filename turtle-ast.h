@@ -69,6 +69,10 @@ struct ast_node {
 // for example:
 struct ast_node *make_expr_value(double value);
 
+struct ast_node *make_expr_name(char *name);
+
+//struct ast_node *make_cmd_colorRGB(double R, double G, double B);
+
 
 struct ast_node *make_cmd_up(void);
 

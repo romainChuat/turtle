@@ -27,6 +27,9 @@ DIGIT [0-9]
 "color"             { return KW_COLOR; }
 "print"             { return KW_PRINT; }
 
+
+
+
 [\n\t ]*              /* whitespace */
 .                     { fprintf(stderr, "Unknown token: '%s'\n", yytext); exit(EXIT_FAILURE); }
 
