@@ -20,13 +20,21 @@ int main() {
 
   assert(root.unit);
 
+  /* logs */
+
+  FILE *fp = freopen("logs.txt", "w", stderr);
+  assert(fp);
+  fprintf(stderr, "--------------------------------------------------------------\n\n\n");
+
+  /**/
+
   struct context ctx;
   context_create(&ctx);
 
   ast_eval(&root, &ctx);
-//   ast_print(&root);
+  //ast_print(&root);
 
   ast_destroy(&root);
-
+  
   return ret;
 }

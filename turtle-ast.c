@@ -8,6 +8,8 @@
 #include <math.h>
 
 #define PI 3.141592653589793
+#define RAD PI/180
+
 
 struct ast_node *make_expr_value(double value) {
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
@@ -156,9 +158,21 @@ struct ast_node *make_cmd_print(struct ast_node *expr){
 
 
 
-
+//libère seulement les noeuds de commande et leur enfants (pas encore les enfants des enfants)
 void ast_destroy(struct ast *self) {
-
+  struct ast_node *curr = self->unit;
+  struct ast_node *next = NULL;
+  while(curr) {
+    
+    next = curr->next;
+  
+    for(size_t j = 0; j < curr->children_count; j++) {
+      struct ast_node *node = curr->children[j];
+      free(node);
+    }
+    free(curr);
+    curr = next;
+  }
 }
 
 /*
@@ -194,45 +208,104 @@ void eval_cmd( struct ast_node *cmd, struct context *ctx) {
   switch (cmd->u.cmd) {
     case CMD_UP:
       ctx->up = true;
+
+      fprintf(stderr, "Up\n");
       break;
     case CMD_DOWN:
       ctx->up = false;
+
+      fprintf(stderr, "Down\n");
       break;
     case CMD_RIGHT:
-      ctx->angle += cmd->children[0]->u.value;
+      if(cmd->children[0]->u.value <= 360) {
+        ctx->angle += cmd->children[0]->u.value;
+        // angle adjustment if angle is not include in the interval [0; 360[
+        if(ctx->angle >= 360) ctx->angle -= 360;
+        if(ctx->angle < 0) ctx->angle += 360;
+
+        fprintf(stderr, "Right %f\n", cmd->children[0]->u.value);
+      }
       break;
     case CMD_LEFT:
-      ctx->angle -= cmd->u.value;
+      if(cmd->children[0]->u.value <= 360) {
+        ctx->angle -= cmd->children[0]->u.value;
+        // angle adjustment if angle is not include in the interval [0; 360[
+        if(ctx->angle >= 360) ctx->angle -= 360;
+        if(ctx->angle < 0) ctx->angle += 360;
+
+        fprintf(stderr, "Left %f\n", cmd->children[0]->u.value);
+      }
       break;
     case CMD_HEADING:
-      ctx->angle = cmd->u.value;
+      if(cmd->children[0]->u.value <= 360) {
+        ctx->angle = cmd->children[0]->u.value;
+
+        fprintf(stderr, "Heading %f\n", cmd->children[0]->u.value);
+      }
       break;
     case CMD_FORWARD:
-      //calcul selon angle et position
+        //Calcul new positions x, y
+        
+        double new_x = cmd->children[0]->u.value * sin(ctx->angle * RAD);
+        double new_y = cmd->children[0]->u.value * cos(ctx->angle * RAD);
+
+        ctx->x += new_x;
+        ctx->y += new_y;
+
+        fprintf(stdout, "LineTo %f %f\n", ctx->x, -ctx->y);
+
+        fprintf(stderr, "(angle %f) Forward %f\t\t\t->\t\t\t", ctx->angle, cmd->children[0]->u.value);
+        fprintf(stderr, "LineTo %f %f\n", ctx->x, -ctx->y);
       break;
     case CMD_BACKWARD:
-     //
+        double new__x = cmd->children[0]->u.value * sin(ctx->angle * RAD);
+        double new__y = cmd->children[0]->u.value * cos(ctx->angle * RAD);
+
+        ctx->x -= new__x;
+        ctx->y -= new__y;
+
+        fprintf(stdout, "LineTo %f %f\n", ctx->x, -ctx->y);
+
+        fprintf(stderr, "(angle %f) Backward %f\t\t->\t\t", ctx->angle, cmd->children[0]->u.value);
+        fprintf(stderr, "LineTo %f %f\n", ctx->x, -ctx->y);
       break;
     case CMD_POSITION:
-      ctx->x = cmd->u.value;
-      ctx->y = cmd->u.value;
+      ctx->x = cmd->children[0]->u.value;
+      ctx->y = cmd->children[1]->u.value;
+
+      fprintf(stderr, "Position %f %f\n", ctx->x, ctx->y);
+
       break;
     case CMD_HOME:
-      printf("HOME");
+      ctx->x = 0;
+      ctx->y = 0;
+
+      fprintf(stdout, "MoveTo %f %f\n", ctx->x, ctx->y);
+
+      fprintf(stderr, "Home\t\t\t->\t\t\t");
+      fprintf(stderr, "MoveTo %f %f\n", ctx->x, ctx->y);
       break;
     case CMD_COLOR:
-      printf("COLOR ");
-      print_expr(cmd->children[0]);
+      fprintf(stdout, "Color %f %f %f\n", cmd->children[0]->u.value, cmd->children[1]->u.value, cmd->children[2]->u.value);
+
+      fprintf(stderr, "color %f %f %f\t\t->\t\t", cmd->children[0]->u.value, cmd->children[1]->u.value, cmd->children[2]->u.value);
+      fprintf(stderr, "Color %f %f %f\n", cmd->children[0]->u.value, cmd->children[1]->u.value, cmd->children[2]->u.value);
+
+
+      /*
       if (cmd->children_count == 3) {
         printf(" ");
         print_expr(cmd->children[1]);
         printf(" ");
         print_expr(cmd->children[2]);
       }
+      */
       break;
     case CMD_PRINT:
+    /*
       return "PRINT ";
       print_expr(cmd->children[0]);
+    */
       break;
     default:
       assert("invalid command kind");
@@ -240,15 +313,11 @@ void eval_cmd( struct ast_node *cmd, struct context *ctx) {
   }
 }
 
-void eval_ast_node(const struct ast_node *node) {
+/*
+void eval_ast_node(const struct ast_node *node, struct context *ctx) {
   switch (node->kind) {
-          case KIND_EXPR_VALUE:
-            printf("Value ");
-            print_expr(node);
-            break;
           case KIND_CMD_SIMPLE:
-            printf("Command ");
-            print_cmd(node);
+            eval_cmd(node, ctx);
             break;
           default:
             assert("invalid node kind");
@@ -256,21 +325,25 @@ void eval_ast_node(const struct ast_node *node) {
         }
         printf("\n");
 }
+*/
 
 void ast_eval(const struct ast *self, struct context *ctx) {
-  /*
+  
   struct ast_node *curr = self->unit;
   while(curr) {
-    print_ast_node(curr);
+    eval_cmd(curr, ctx);
+
+    /*
     for(size_t j = 0; j < curr->children_count; j++) {
       const struct ast_node *node = curr->children[j];
-      print_ast_node(node);
+        eval_ast_node(node);
 
       
     }
+    */
     curr = curr->next;
   }
-  */
+  
 }
 
 
@@ -367,11 +440,11 @@ void ast_print(const struct ast *self) {
   struct ast_node *curr = self->unit;
   while(curr) {
     print_ast_node(curr);
+
+
     for(size_t j = 0; j < curr->children_count; j++) {
       const struct ast_node *node = curr->children[j];
       print_ast_node(node);
-
-      
     }
     curr = curr->next;
   }

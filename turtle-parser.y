@@ -37,6 +37,12 @@ void yyerror(struct ast *ret, const char *);
 %token            KW_COLOR        "color"
 %token            KW_PRINT        "print"
 
+%token            BLOCK_START "{"
+%token            BLOCK_END    "}"
+
+
+
+
 
 
 
@@ -74,11 +80,14 @@ cmd:
   |  KW_COLOR expr expr expr{ $$ = make_cmd_colorRGB($2,$3,$4); }
   |  KW_PRINT expr          { $$ = make_cmd_print($2); }
 
+  | BLOCK_START             { $$ = make_block_start();} 
+
 ;
 
 expr:
     VALUE             { $$ = make_expr_value($1); }
   | NAME              { $$ = make_expr_name($1);}
+  
     /* TODO: add identifier */
 ;
 

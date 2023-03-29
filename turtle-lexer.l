@@ -27,6 +27,11 @@ DIGIT [0-9]
 "color"             { return KW_COLOR; }
 "print"             { return KW_PRINT; }
 
+"{"                 {return KW_BLOCK_START;}
+"}"                 {return KW_BLOCK_END;}
+
+
+
 
 
 

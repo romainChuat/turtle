@@ -114,6 +114,8 @@ struct context {
   double angle;
   bool up;
 
+  
+
   // TODO: add procedure handling
   // TODO: add variable handling
 };
