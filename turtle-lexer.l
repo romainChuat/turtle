@@ -10,6 +10,7 @@
 %option warn 8bit nodefault noyywrap
 
 DIGIT [0-9]
+FLOAT []
 
 
 %%
@@ -26,9 +27,8 @@ DIGIT [0-9]
 "home"              { return KW_HOME; }
 "color"             { return KW_COLOR; }
 "print"             { return KW_PRINT; }
-
-"{"                 {return KW_BLOCK_START;}
-"}"                 {return KW_BLOCK_END;}
+"{"                 {return BLOCK_START;}
+"}"                 {return BLOCK_END;}
 
 
 

@@ -152,6 +152,13 @@ struct ast_node *make_cmd_print(struct ast_node *expr){
   return node;
 }
 
+struct ast_node *make_block_start(struct ast_node *expr){
+  return expr;
+}
+
+struct ast_node *make_block_end(struct ast_node *expr){
+  return expr;
+}
 /* 
  * 
  */
@@ -286,10 +293,11 @@ void eval_cmd( struct ast_node *cmd, struct context *ctx) {
       fprintf(stderr, "MoveTo %f %f\n", ctx->x, ctx->y);
       break;
     case CMD_COLOR:
-      fprintf(stdout, "Color %f %f %f\n", cmd->children[0]->u.value, cmd->children[1]->u.value, cmd->children[2]->u.value);
 
-      fprintf(stderr, "color %f %f %f\t\t->\t\t", cmd->children[0]->u.value, cmd->children[1]->u.value, cmd->children[2]->u.value);
       fprintf(stderr, "Color %f %f %f\n", cmd->children[0]->u.value, cmd->children[1]->u.value, cmd->children[2]->u.value);
+
+      fprintf(stdout, "color %f %f %f\t\t->\t\t", cmd->children[0]->u.value, cmd->children[1]->u.value, cmd->children[2]->u.value);
+      //fprintf(stderr, "Color %f %f %f\n", cmd->children[0]->u.value, cmd->children[1]->u.value, cmd->children[2]->u.value);
 
 
       /*

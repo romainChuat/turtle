@@ -67,20 +67,20 @@ cmds:
 ;
 
 cmd:
-    KW_FORWARD expr         { $$ = make_cmd_forward($2); }
-  |  KW_BACKWARD expr       { $$ = make_cmd_backward($2); }
-  |  KW_RIGHT expr          { $$ = make_cmd_right($2); }
-  |  KW_LEFT expr           { $$ = make_cmd_left($2); }
-  |  KW_POSITION expr expr  { $$ = make_cmd_position($2, $3); }
-  |  KW_UP                  { $$ = make_cmd_up(); }
-  |  KW_DOWN                { $$ = make_cmd_down(); }
-  |  KW_HEADING expr        { $$ = make_cmd_heading($2); }
-  |  KW_HOME                { $$ = make_cmd_home(); }
-  |  KW_COLOR expr          { $$ = make_cmd_color($2); }
-  |  KW_COLOR expr expr expr{ $$ = make_cmd_colorRGB($2,$3,$4); }
-  |  KW_PRINT expr          { $$ = make_cmd_print($2); }
-
-  | BLOCK_START             { $$ = make_block_start();} 
+    KW_FORWARD expr           { $$ = make_cmd_forward($2); }
+  |  KW_BACKWARD expr         { $$ = make_cmd_backward($2); }
+  |  KW_RIGHT expr            { $$ = make_cmd_right($2); }
+  |  KW_LEFT expr             { $$ = make_cmd_left($2); }
+  |  KW_POSITION expr expr    { $$ = make_cmd_position($2, $3); }
+  |  KW_UP                    { $$ = make_cmd_up(); }
+  |  KW_DOWN                  { $$ = make_cmd_down(); }
+  |  KW_HEADING expr          { $$ = make_cmd_heading($2); }
+  |  KW_HOME                  { $$ = make_cmd_home(); }
+  |  KW_COLOR expr            { $$ = make_cmd_color($2); }
+  |  KW_COLOR expr expr expr  { $$ = make_cmd_colorRGB($2,$3,$4); }
+  |  KW_PRINT expr            { $$ = make_cmd_print($2); }
+  |  BLOCK_START  expr         { $$ = make_block_start($2);} 
+  |  BLOCK_END   expr          { $$ = make_block_end($2);} 
 
 ;
 
