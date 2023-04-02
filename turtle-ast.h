@@ -98,9 +98,12 @@ struct ast_node *make_cmd_colorRGB(struct ast_node *R,struct ast_node *G, struct
 
 struct ast_node *make_cmd_print(struct ast_node *expr);
 
-struct ast_node *make_block_start(struct ast_node *expr);
+struct ast_node *make_block_start();
 
-struct ast_node *make_block_end(struct ast_node *expr);
+struct ast_node *make_block_end();
+
+/* Unary / Binary Operations */
+struct ast_node *make_expr_plus(struct ast_node *expr1, struct ast_node *expr2);
 
 
 

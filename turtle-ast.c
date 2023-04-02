@@ -25,10 +25,6 @@ struct ast_node *make_expr_name(char *name) {
   return node;
 }
 
-/*
-Colors
-*/
-
 
 /* 
  *  CMD_SIMPLE 
@@ -152,35 +148,56 @@ struct ast_node *make_cmd_print(struct ast_node *expr){
   return node;
 }
 
-struct ast_node *make_block_start(struct ast_node *expr){
-  return expr;
+/* BLOCK */
+
+struct ast_node *make_block_start() {
+  struct ast_node *node = calloc(1, sizeof(struct ast_node));
+  node->kind = KIND_CMD_BLOCK;
+  node->children_count = 1;
+  node->children[0] = node->next;
+  node->next = NULL;
+  return node;
 }
 
-struct ast_node *make_block_end(struct ast_node *expr){
-  return expr;
+
+struct ast_node *make_block_end() {
+  
+  struct ast_node *node = calloc(1, sizeof(struct ast_node));
+  node->kind = KIND_CMD_BLOCK;
+  node->children_count = 1;
+  node->children[0] = node->next;
+  return node;
 }
+
+/* Unary / Binary Operations */
+struct ast_node *make_expr_plus(struct ast_node *expr1, struct ast_node *expr2) {
+  return NULL;
+}
+
 /* 
  * 
  */
 
 
-
-//libère seulement les noeuds de commande et leur enfants (pas encore les enfants des enfants)
 void ast_destroy(struct ast *self) {
-  struct ast_node *curr = self->unit;
-  struct ast_node *next = NULL;
-  while(curr) {
-    
-    next = curr->next;
-  
-    for(size_t j = 0; j < curr->children_count; j++) {
-      struct ast_node *node = curr->children[j];
-      free(node);
+    if (self == NULL || self->unit == NULL) {
+        return;
     }
-    free(curr);
-    curr = next;
-  }
+
+    //Free children recursively
+    for (size_t i = 0; i < self->unit->children_count; i++) {
+        ast_destroy(&(struct ast){self->unit->children[i]});
+    }
+
+    //Free next node recursively
+    ast_destroy(&(struct ast){self->unit->next});
+
+    //Free current node
+    free(self->unit);
+    self->unit = NULL;
 }
+
+
 
 /*
  * context
@@ -429,6 +446,7 @@ void print_cmd(const struct ast_node *cmd) {
 
 void print_ast_node(const struct ast_node *node) {
   switch (node->kind) {
+    /*
           case KIND_EXPR_VALUE:
             printf("Value ");
             print_expr(node);
@@ -437,6 +455,10 @@ void print_ast_node(const struct ast_node *node) {
             printf("Command ");
             print_cmd(node);
             break;
+    */
+          case KIND_CMD_BLOCK:
+            printf("Block\n");
+            print_cmd(node);
           default:
             assert("invalid node kind");
             break;
@@ -444,18 +466,26 @@ void print_ast_node(const struct ast_node *node) {
         printf("\n");
 }
 
-void ast_print(const struct ast *self) {
-  struct ast_node *curr = self->unit;
-  while(curr) {
-    print_ast_node(curr);
-
-
-    for(size_t j = 0; j < curr->children_count; j++) {
-      const struct ast_node *node = curr->children[j];
-      print_ast_node(node);
-    }
-    curr = curr->next;
+void print_ast_node_recursive(const struct ast_node *node) {
+  if (node == NULL) {
+    return;
   }
+  //noeud courant
+  print_ast_node(node);
+
+  //parcourt les enfants récursivement
+  for (size_t j = 0; j < node->children_count; j++) {
+    const struct ast_node *child = node->children[j];
+    print_ast_node_recursive(child);
+  }
+
+  //parcourt les noeuds suivants récursivement
+  print_ast_node_recursive(node->next);
 }
+
+void ast_print(const struct ast *self) {
+  print_ast_node_recursive(self->unit);
+}
+
 
 

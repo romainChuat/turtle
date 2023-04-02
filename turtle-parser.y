@@ -37,8 +37,10 @@ void yyerror(struct ast *ret, const char *);
 %token            KW_COLOR        "color"
 %token            KW_PRINT        "print"
 
-%token            BLOCK_START "{"
-%token            BLOCK_END    "}"
+%token            BLOCK_START      "{"
+%token            BLOCK_END         "}"
+
+%token            BINOP_PLUS        "+"
 
 
 
@@ -79,14 +81,20 @@ cmd:
   |  KW_COLOR expr            { $$ = make_cmd_color($2); }
   |  KW_COLOR expr expr expr  { $$ = make_cmd_colorRGB($2,$3,$4); }
   |  KW_PRINT expr            { $$ = make_cmd_print($2); }
-  |  BLOCK_START  expr         { $$ = make_block_start($2);} 
-  |  BLOCK_END   expr          { $$ = make_block_end($2);} 
+
+  |  BLOCK_START              { $$ = make_block_start();} 
+  |  BLOCK_END                { } 
+
+  
+
 
 ;
 
 expr:
     VALUE             { $$ = make_expr_value($1); }
   | NAME              { $$ = make_expr_name($1);}
+
+ // | expr BINOP_PLUS expr       { $$ = make_expr_plus($1,$3);}
   
     /* TODO: add identifier */
 ;
