@@ -41,6 +41,12 @@ void yyerror(struct ast *ret, const char *);
 %token            BLOCK_END         "}"
 
 %token            BINOP_PLUS        "+"
+%token            BINOP_MINUS       "-"
+%token            BINOP_DIVIDE      "/"
+%token            BINOP_MULT        "*"
+
+
+
 
 
 
@@ -93,8 +99,13 @@ cmd:
 expr:
     VALUE             { $$ = make_expr_value($1); }
   | NAME              { $$ = make_expr_name($1);}
+  | VALUE BINOP_PLUS VALUE { $$ = make_expr_op($1,$3,'+');}
+  | VALUE BINOP_MINUS VALUE { $$ = make_expr_op($1,$3,'-');}
+  | VALUE BINOP_DIVIDE VALUE { $$ = make_expr_op($1,$3,'/');}
+  | VALUE BINOP_MULT VALUE { $$ = make_expr_op($1,$3,'*');}
 
- // | expr BINOP_PLUS expr       { $$ = make_expr_plus($1,$3);}
+
+
   
     /* TODO: add identifier */
 ;

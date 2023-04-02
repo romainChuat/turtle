@@ -103,7 +103,8 @@ struct ast_node *make_block_start();
 struct ast_node *make_block_end();
 
 /* Unary / Binary Operations */
-struct ast_node *make_expr_plus(struct ast_node *expr1, struct ast_node *expr2);
+struct ast_node *make_expr_op(double value, double value2, char op);
+
 
 
 

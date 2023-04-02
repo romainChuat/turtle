@@ -170,8 +170,27 @@ struct ast_node *make_block_end() {
 }
 
 /* Unary / Binary Operations */
-struct ast_node *make_expr_plus(struct ast_node *expr1, struct ast_node *expr2) {
-  return NULL;
+struct ast_node *make_expr_op(double value, double value2, char op) {
+  struct ast_node *node = calloc(1, sizeof(struct ast_node));
+  node->kind = KIND_EXPR_VALUE;
+  switch (op)
+  {
+  case '+':
+    node->u.value = value + value2;
+    break;
+  case '-':
+    node->u.value = value - value2;
+    break;
+  case '/':
+    node->u.value = value / value2;
+    break;
+  case '*':
+    node->u.value = value * value2;
+    break;
+  default:
+    break;
+  }
+  return node;
 }
 
 /* 

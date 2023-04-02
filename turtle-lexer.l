@@ -32,6 +32,11 @@ DIGIT [0-9]
 "}"                 { return BLOCK_END;}
 
 "+"                 { return BINOP_PLUS;}
+"-"                 { return BINOP_MINUS;}
+"/"                 { return BINOP_DIVIDE;}
+"*"                 { return BINOP_MULT;}
+
+
 
 
 
